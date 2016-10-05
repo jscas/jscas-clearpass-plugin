@@ -5,7 +5,8 @@ const Joi = require('joi')
 const introduce = require('introduce')(__dirname)
 
 const configSchema = Joi.object().keys({
-  encryptionKey: Joi.string().min(32).required()
+  encryptionKey: Joi.string().min(32).required(),
+  lifetime: Joi.number().min(0).default(0)
 })
 
 let log
@@ -33,7 +34,7 @@ module.exports.plugin = function plugin (settings, context) {
 module.exports.postInit = function postInit (context) {
   server = context.server
 
-  const dao = introduce('lib/dao')(log, mongoose, config.value.encryptionKey)
+  const dao = introduce('lib/dao')(log, mongoose, config.value.encryptionKey, config.value.lifetime)
   const interceptor = introduce('lib/interceptor')(log, dao)
 
   const routes = introduce('lib/routes')(log, dao)
