@@ -1,5 +1,6 @@
 'use strict'
 
+const Promise = require('bluebird')
 const Joi = require('joi')
 const introduce = require('introduce')(__dirname)
 
@@ -40,7 +41,7 @@ module.exports.postInit = function postInit (context) {
 
   return Promise.resolve({
     hooks: {
-      preAuth: interceptor.hook.bind(interceptor)
+      preAuth: interceptor.hook
     }
   })
 }
