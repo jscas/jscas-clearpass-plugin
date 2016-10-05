@@ -25,9 +25,14 @@ plugins configuration section. It should be under the key `clearpass`.
 
 ```javascript
 {
-  encryptionKey: 'at least a 32 character string'
+  encryptionKey: 'at least a 32 character string',
+  lifetime: 0
 }
 ```
+
+The `lifetime` property specifies how long, in milliseconds, a set of stored
+credentials should be valid. A setting of `0` indicates that the sealed
+credentials are indefinitely valid. You should set this to a shorter time.
 
 ## REST API
 
