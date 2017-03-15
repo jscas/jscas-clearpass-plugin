@@ -1,6 +1,6 @@
 {
   "name": "jscas-clearpass-plugin",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "A plugin for the JSCAS server that caches login credentials and provides a REST API to retrieve them",
   "homepage": "https://github.com/jscas/jscas-clearpass-plugin",
   "main": "plugin.js",
