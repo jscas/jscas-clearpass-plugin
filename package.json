@@ -35,7 +35,7 @@
     "pre-commit": "^1.2.2"
   },
   "dependencies": {
-    "bluebird": "^3.4.7",
+    "bluebird": "^3.5.0",
     "boom": "^4.2.0",
     "introduce": "^0.2.0",
     "iron": "^4.0.4",
