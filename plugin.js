@@ -13,11 +13,13 @@ let log
 let mongoose
 let config
 let server
+let opbeat
 
 module.exports.name = 'clearpass'
 module.exports.plugin = function plugin (settings, context) {
   log = context.logger
   mongoose = context.dataSources.mongoose
+  opbeat = context.opbeat
 
   if (!mongoose) {
     return Promise.reject(new Error('mongoose data source is required'))
@@ -34,7 +36,7 @@ module.exports.plugin = function plugin (settings, context) {
 module.exports.postInit = function postInit (context) {
   server = context.server
 
-  const dao = introduce('lib/dao')(log, mongoose, config.value.encryptionKey, config.value.lifetime)
+  const dao = introduce('lib/dao')(log, mongoose, opbeat, config.value.encryptionKey, config.value.lifetime)
   const interceptor = introduce('lib/interceptor')(log, dao)
 
   const routes = introduce('lib/routes')(log, dao)
