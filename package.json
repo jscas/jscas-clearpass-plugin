@@ -27,8 +27,8 @@
     "gulp": "^3.9.1",
     "gulp-istanbul": "^1.1.1",
     "gulp-load-plugins": "^1.5.0",
-    "gulp-mocha": "^3.0.1",
-    "gulp-standard": "^8.0.3",
+    "gulp-mocha": "^4.3.0",
+    "gulp-standard": "^10.0.0",
     "is-promise": "^2.1.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
@@ -36,9 +36,9 @@
   },
   "dependencies": {
     "bluebird": "^3.5.0",
-    "boom": "^4.2.0",
+    "boom": "^4.3.1",
     "introduce": "^0.2.0",
     "iron": "^4.0.4",
-    "joi": "^10.2.2"
+    "joi": "^10.4.1"
   }
 }
