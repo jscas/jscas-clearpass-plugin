@@ -10,7 +10,7 @@ const key = '123456789012345678901234567890123'
 
 test('storeCredentials works without error', async (t) => {
   t.plan(1)
-  const dao = daoFactory(redis, key, 100, log)
+  const dao = daoFactory({redis, encryptionKey: key, ttl: 100, log})
   try {
     await dao.storeCredentials('foo', 'bar')
     t.pass()
@@ -21,7 +21,7 @@ test('storeCredentials works without error', async (t) => {
 
 test('getCredentials returns stored credentials', async (t) => {
   t.plan(1)
-  const dao = daoFactory(redis, key, 100, log)
+  const dao = daoFactory({redis, encryptionKey: key, ttl: 100, log})
   try {
     await dao.storeCredentials('foo', 'bar')
     const credentials = await dao.getCredentials('foo')
@@ -32,4 +32,16 @@ test('getCredentials returns stored credentials', async (t) => {
   } catch (e) {
     t.threw(e)
   }
+})
+
+test('throws for purged credentials', {timeout: 2600}, (t) => {
+  t.plan(1)
+  const dao = daoFactory({redis, encryptionKey: key, ttl: 100, skew: 1, log})
+  dao.storeCredentials('foo', 'bar')
+    .then(() => {
+      setTimeout(() => {
+        dao.getCredentials('foo').catch((e) => t.match(e, /cannot find/))
+      }, 2500)
+    })
+    .catch(t.threw)
 })

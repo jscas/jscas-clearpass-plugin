@@ -17,12 +17,21 @@ module.exports = fp(function clearpassPlugin (server, options, next) {
   }
 
   const ttl = options.ttl || 0
+  const daoContext = {
+    redis: undefined,
+    mongo: undefined,
+    encryptionKey: options.encryptionKey,
+    ttl: ttl,
+    skew: options.skew,
+    log: server.log
+  }
   let dao
   if (server.redis) {
-    dao = require('./lib/redis')(server.redis, options.encryptionKey, ttl, server.log)
+    daoContext.redis = server.redis
+    dao = require('./lib/redis')(daoContext)
   } else {
-    const collection = server.mongo.db.collection('clearpass')
-    dao = require('./lib/mongo')(collection, options.encryptionKey, ttl, server.log)
+    daoContext.mongo = server.mongo.db.collection('clearpass')
+    dao = require('./lib/mongo')(daoContext)
   }
 
   const getOptions = {
