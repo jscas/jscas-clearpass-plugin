@@ -1,9 +1,10 @@
 # JSCAS Clearpass
 
 This is a plugin for the [JSCAS server][server]. It is used to intercept a
-user's credentials as they are logging in, and storing them in a MongoDB
-database. As such, this plugin requires the server to have a
-[Mongoose][mongoose] instance configured.
+user's credentials as they are logging in and store them in a cache. The cache
+is either a Redis or MongoDB database. Therefore, the server must have either
+storage mechanism configured. If both are configured then the Redis database
+will take precedence.
 
 This plugin exposes a REST API for retrieving the stored credentials.
 
@@ -16,7 +17,14 @@ the API via a server-side method, and that you allow only specific servers
 to access the API (i.e. apply a very strict incoming firewall).
 
 [server]: https://github.com/jscas/cas-server
-[mongoose]: http://mongoosejs.com/
+
+## Database Notes
+
++ Redis: honors the configured `lifetime`. If set to `0`, it is left up to the
+administrator to clean up the database.
++ MongoDB: does remove entries after the configured `lifetime`. It is left up
+to the administrator to clean up the database. Consider using
+[mongo-purge](https://www.npmjs.com/package/mongo-purge) to handle this.
 
 ## Configuration
 
@@ -26,29 +34,26 @@ plugins configuration section. It should be under the key `clearpass`.
 ```javascript
 {
   encryptionKey: 'at least a 32 character string',
-  lifetime: 0
+  lifetime: 0,
+  authKeys: ['string key']
 }
 ```
 
 The `lifetime` property specifies how long, in milliseconds, a set of stored
 credentials should be valid. A setting of `0` indicates that the sealed
-credentials are indefinitely valid. You should set this to a shorter time.
+credentials are indefinitely valid. You should set this to a reasonably
+short time.
+
+The `authKeys` property specifies a set of bearer tokens for clients that
+are allowed to query the REST API. There must be at least one key present.
 
 ## REST API
 
-All requests to the API must include the header `x-clearpass-api-key`. This
-header must contain a valid API key. Keys are stored in the MongoDB database
-under the `clearpassapikeys` collection. An API key document has the form:
+All requests to the API must include the `Authorization` header. This
+header must contain a valid API key prefixed with `bearer `. Keys can be any
+string that are valid for an HTTP header value ([rfc2616 §4.2][rfc2616]).
 
-```javascript
-{
-  owner: String,
-  key: String
-}
-```
-
-Keys can be any string that are valid for an HTTP header value
-([rfc2616 §4.2][rfc2616]).
+Example: `Authorization: bearer 123456`.
 
 [rfc2616]: http://tools.ietf.org/html/rfc2616#section-4.2
 

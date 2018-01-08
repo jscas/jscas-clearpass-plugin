@@ -1,50 +1,72 @@
 'use strict'
 
-const Promise = require('bluebird')
-const Joi = require('joi')
-const introduce = require('introduce')(__dirname)
+const fp = require('fastify-plugin')
 
-const configSchema = Joi.object().keys({
-  encryptionKey: Joi.string().min(32).required(),
-  lifetime: Joi.number().min(0).default(0)
+module.exports = fp(function clearpassPlugin (server, options, next) {
+  if (!options || Object.prototype.toString.apply(options) !== '[object Object]') {
+    return next(Error('clearpass: must supply an options object'))
+  }
+  if (!options.encryptionKey || options.encryptionKey.length < 32) {
+    return next(Error('clearpass: encryptionKey must be at least 32 characters'))
+  }
+  if (!options.authKeys || !Array.isArray(options.authKeys) || options.authKeys.length === 0) {
+    return next(Error('clearpass: must supply array of authorization keys'))
+  }
+  if (!server.redis && !server.mongo) {
+    return next(Error('clearpass: server must have a redis or mongo connection registered'))
+  }
+
+  const ttl = options.ttl || 0
+  let dao
+  if (server.redis) {
+    dao = require('./lib/redis')(server.redis, options.encryptionKey, ttl, server.log)
+  } else {
+    const collection = server.mongo.db.collection('clearpass')
+    dao = require('./lib/mongo')(collection, options.encryptionKey, ttl, server.log)
+  }
+
+  const getOptions = {
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          username: { type: 'string' }
+        }
+      },
+
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            username: { type: 'string' },
+            password: { type: 'string' }
+          }
+        }
+      }
+    }
+  }
+
+  server
+    .register(require('fastify-bearer-auth'), {keys: new Set(options.authKeys)})
+    .get('/clearpass/:username/credentials', getOptions, async function (req, reply) {
+      req.log.trace('handling request to get credentials for: %s', req.params.username)
+      try {
+        const credentials = await dao.getCredentials(req.params.username)
+        reply.send(credentials)
+      } catch (e) {
+        req.log.error(e.message)
+        req.log.debug(e.stack)
+        return Error('clearpass: failed to lookup credentials')
+      }
+    })
+
+  server.registerHook('preAuth', async function clearpassHook (context) {
+    if (!context.username || !context.password) return
+    await dao.storeCredentials(context.username, context.password)
+    return true
+  })
+
+  next()
 })
 
-let log
-let mongoose
-let config
-let server
-let opbeat
-
-module.exports.name = 'clearpass'
-module.exports.plugin = function plugin (settings, context) {
-  log = context.logger
-  mongoose = context.dataSources.mongoose
-  opbeat = context.opbeat
-
-  if (!mongoose) {
-    return Promise.reject(new Error('mongoose data source is required'))
-  }
-
-  config = Joi.validate(settings, configSchema)
-  if (config.error) {
-    return Promise.reject(new Error(config.error))
-  }
-
-  return Promise.resolve({})
-}
-
-module.exports.postInit = function postInit (context) {
-  server = context.server
-
-  const dao = introduce('lib/dao')(log, mongoose, opbeat, config.value.encryptionKey, config.value.lifetime)
-  const interceptor = introduce('lib/interceptor')(log, dao)
-
-  const routes = introduce('lib/routes')(log, dao)
-  server.route(routes)
-
-  return Promise.resolve({
-    hooks: {
-      preAuth: interceptor.hook
-    }
-  })
-}
+module.exports.pluginName = 'clearpass'

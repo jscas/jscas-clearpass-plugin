@@ -5,8 +5,10 @@
   "homepage": "https://github.com/jscas/jscas-clearpass-plugin",
   "main": "plugin.js",
   "scripts": {
-    "test": "gulp test",
-    "lint": "gulp lint"
+    "test": "tap 'test/**/*.test.js'",
+    "test-ci": "tap --cov 'test/**/*.test.js'",
+    "lint": "standard | snazzy",
+    "lint-ci": "standard"
   },
   "precommit": [
     "lint",
@@ -23,22 +25,22 @@
   },
   "bugs": "https://github.com/jscas/clearpass-plugin/issues",
   "devDependencies": {
-    "chai": "^3.5.0",
-    "gulp": "^3.9.1",
-    "gulp-istanbul": "^1.1.1",
-    "gulp-load-plugins": "^1.5.0",
-    "gulp-mocha": "^4.3.0",
-    "gulp-standard": "^10.0.0",
-    "is-promise": "^2.1.0",
-    "istanbul": "^0.4.5",
-    "mocha": "^3.2.0",
-    "pre-commit": "^1.2.2"
+    "abstract-logging": "^1.0.0",
+    "fastify": "^0.37.0",
+    "fastify-mongodb": "^0.3.0",
+    "fastify-redis": "^0.3.0",
+    "ioredis": "^3.2.2",
+    "ioredis-mock": "^3.6.1",
+    "mockgo": "^1.1.7",
+    "pre-commit": "^1.2.2",
+    "simple-get": "^2.7.0",
+    "snazzy": "^7.0.0",
+    "standard": "^10.0.3",
+    "tap": "^11.0.1"
   },
   "dependencies": {
-    "bluebird": "^3.5.0",
-    "boom": "^4.3.1",
-    "introduce": "^0.2.0",
-    "iron": "^4.0.4",
-    "joi": "^10.4.1"
+    "fastify-bearer-auth": "^2.1.0",
+    "fastify-plugin": "^0.2.1",
+    "iron": "^5.0.4"
   }
 }
