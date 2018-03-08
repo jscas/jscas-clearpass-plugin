@@ -30,7 +30,10 @@ module.exports = fp(function clearpassPlugin (server, options, next) {
     daoContext.redis = server.redis
     dao = require('./lib/redis')(daoContext)
   } else {
-    daoContext.mongo = server.mongo.db.collection('clearpass')
+    if (!options.mongodbName) {
+      return next(Error('clearpass: must supply mongo database name via mongodbName option'))
+    }
+    daoContext.mongo = server.mongo.client.db(options.mongodbName).collection('clearpass')
     dao = require('./lib/mongo')(daoContext)
   }
 

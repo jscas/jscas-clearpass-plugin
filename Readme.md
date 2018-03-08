@@ -35,7 +35,8 @@ plugins configuration section. It should be under the key `clearpass`.
 {
   encryptionKey: 'at least a 32 character string',
   lifetime: 0,
-  authKeys: ['string key']
+  authKeys: ['string key'],
+  mongodbName: 'string'
 }
 ```
 
@@ -46,6 +47,12 @@ short time.
 
 The `authKeys` property specifies a set of bearer tokens for clients that
 are allowed to query the REST API. There must be at least one key present.
+
+The `mongodbName` property is only required if using the MongoDB backend.
+This option is required when using MongoDB because since v3.0.0 of the
+`mongodb` driver, it's prohibitively difficult to determine the correct
+database via the connection. See their
+[issue NODE-1258](https://jira.mongodb.org/browse/NODE-1258).
 
 ## REST API
 

@@ -5,6 +5,8 @@
   "homepage": "https://github.com/jscas/jscas-clearpass-plugin",
   "main": "plugin.js",
   "scripts": {
+    "pretest": "docker-compose up -d mongodb",
+    "posttest": "docker-compose down",
     "test": "tap 'test/**/*.test.js'",
     "test-ci": "tap --cov 'test/**/*.test.js'",
     "lint": "standard | snazzy",
@@ -26,21 +28,21 @@
   "bugs": "https://github.com/jscas/clearpass-plugin/issues",
   "devDependencies": {
     "abstract-logging": "^1.0.0",
-    "fastify": "^0.37.0",
-    "fastify-mongodb": "^0.3.0",
-    "fastify-redis": "^0.3.0",
+    "fastify": "^1.1.1",
+    "fastify-mongodb": "^0.5.0",
+    "fastify-redis": "^0.4.0",
     "ioredis": "^3.2.2",
-    "ioredis-mock": "^3.6.1",
-    "mockgo": "^1.1.7",
+    "ioredis-mock": "^3.6.4",
+    "mongodb": "^3.0.4",
     "pre-commit": "^1.2.2",
     "simple-get": "^2.7.0",
-    "snazzy": "^7.0.0",
-    "standard": "^10.0.3",
-    "tap": "^11.0.1"
+    "snazzy": "^7.1.1",
+    "standard": "^11.0.0",
+    "tap": "^11.1.2"
   },
   "dependencies": {
-    "fastify-bearer-auth": "^2.1.0",
-    "fastify-plugin": "^0.2.1",
+    "fastify-bearer-auth": "^3.0.0",
+    "fastify-plugin": "^0.2.2",
     "iron": "^5.0.4"
   }
 }

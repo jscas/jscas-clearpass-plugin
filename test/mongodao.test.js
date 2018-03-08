@@ -3,24 +3,24 @@
 const test = require('tap').test
 const log = require('./nullLogger')
 const daoFactory = require('../lib/mongo')
-const mockgo = require('mockgo')
+const mongodb = require('mongodb')
 
 const key = '123456789012345678901234567890123'
 
 test('mongo dao', (t) => {
+  let mongoClient
   let collection
   t.beforeEach((done) => {
-    mockgo.getConnection((err, conn) => {
+    mongodb.MongoClient.connect('mongodb://localhost:27017/testing', (err, client) => {
       if (err) t.threw(err)
-      collection = conn.collection('clearpass')
+      mongoClient = client
+      collection = client.db('testing').collection('clearpass')
       done()
     })
   })
   t.afterEach((done) => {
     collection.remove({}, done)
-  })
-  t.tearDown((done) => {
-    mockgo.shutDown(done)
+    mongoClient.close()
   })
 
   t.test('storeCredentials works without error', async (t) => {

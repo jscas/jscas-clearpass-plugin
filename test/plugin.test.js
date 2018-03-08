@@ -3,6 +3,7 @@
 const test = require('tap').test
 const sget = require('simple-get')
 const fastify = require('fastify')
+const mongodb = require('mongodb')
 const plugin = require('../')
 
 const key = require('crypto').randomBytes(32).toString('hex')
@@ -112,15 +113,27 @@ test('works with a redis connection', (t) => {
 })
 
 test('mongodb based tests', (t) => {
-  const mockgo = require('mockgo')
-  t.tearDown((done) => mockgo.shutDown(done))
+  t.tearDown((done) => {
+    mongodb.MongoClient.connect('mongodb://localhost:27017/clearpass')
+      .then((client) => {
+        return client.db('clearpass').dropDatabase()
+          .then(() => client.close())
+          .catch((err) => {
+            t.threw(err)
+          })
+      })
+      .catch((err) => {
+        t.threw(err)
+      })
+  })
 
   t.test('works with a mongo connection', (t) => {
     t.plan(3)
     const server = fastify()
+    t.tearDown(() => server.close())
 
     let port = 0
-    mockgo.getConnection((err, conn) => {
+    mongodb.MongoClient.connect('mongodb://localhost:27017/clearpass', (err, conn) => {
       if (err) t.threw(err)
 
       server
@@ -131,7 +144,8 @@ test('mongodb based tests', (t) => {
         })
         .register(plugin, {
           encryptionKey: key,
-          authKeys: ['123456']
+          authKeys: ['123456'],
+          mongodbName: 'clearpass'
         })
 
       server.listen(0, (err) => {
@@ -175,9 +189,10 @@ test('mongodb based tests', (t) => {
   t.test('returns error for expired credentials', (t) => {
     t.plan(3)
     const server = fastify()
+    t.tearDown(() => server.close())
 
     let port = 0
-    mockgo.getConnection((err, conn) => {
+    mongodb.MongoClient.connect('mongodb://localhost:27017/clearpass', (err, conn) => {
       if (err) t.threw(err)
 
       server
@@ -190,7 +205,8 @@ test('mongodb based tests', (t) => {
           encryptionKey: key,
           authKeys: ['123456'],
           ttl: 100,
-          skew: 0
+          skew: 0,
+          mongodbName: 'clearpass'
         })
 
       server.listen(0, (err) => {
