@@ -1,8 +1,6 @@
 'use strict'
 
-const fp = require('fastify-plugin')
-
-module.exports = fp(function clearpassPlugin (server, options, next) {
+module.exports = function clearpassPlugin (server, options, next) {
   if (!options || Object.prototype.toString.apply(options) !== '[object Object]') {
     return next(Error('clearpass: must supply an options object'))
   }
@@ -79,6 +77,6 @@ module.exports = fp(function clearpassPlugin (server, options, next) {
   })
 
   next()
-})
+}
 
 module.exports.pluginName = 'clearpass'

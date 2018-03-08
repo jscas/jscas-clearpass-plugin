@@ -42,7 +42,6 @@
   },
   "dependencies": {
     "fastify-bearer-auth": "^3.0.0",
-    "fastify-plugin": "^0.2.2",
     "iron": "^5.0.4"
   }
 }
