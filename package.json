@@ -17,15 +17,16 @@
     "test"
   ],
   "keywords": [
-    "jscas"
+    "jscas",
+    "cas"
   ],
   "author": "James Sumners <james.sumners@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jscas/clearpass-plugin.git"
+    "url": "https://github.com/jscas/jscas-clearpass-plugin.git"
   },
-  "bugs": "https://github.com/jscas/clearpass-plugin/issues",
+  "bugs": "https://github.com/jscas/jscas-clearpass-plugin/issues",
   "devDependencies": {
     "abstract-logging": "^1.0.0",
     "fastify": "^1.2.0",
