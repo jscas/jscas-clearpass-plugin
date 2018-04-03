@@ -64,8 +64,9 @@ test('works with a redis connection', (t) => {
   t.plan(3)
   const server = fastify()
 
-  const Redis = require('ioredis-mock')
-  const redis = new Redis({})
+  const Redis = require('ioredis')
+  const redis = new Redis()
+  t.tearDown(() => redis.disconnect())
   server
     .register(require('fastify-redis'), {client: redis})
     .decorate('jscasHooks', {})

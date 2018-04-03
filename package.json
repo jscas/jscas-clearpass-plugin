@@ -5,7 +5,7 @@
   "homepage": "https://github.com/jscas/jscas-clearpass-plugin",
   "main": "plugin.js",
   "scripts": {
-    "pretest": "docker-compose up -d mongodb",
+    "pretest": "docker-compose up -d && sleep 1",
     "posttest": "docker-compose down",
     "test": "tap 'test/**/*.test.js'",
     "test-ci": "tap --cov 'test/**/*.test.js'",
@@ -33,7 +33,6 @@
     "fastify-mongodb": "^0.6.0",
     "fastify-redis": "^0.4.0",
     "ioredis": "^3.2.2",
-    "ioredis-mock": "^3.7.1",
     "mongodb": "^3.0.5",
     "pre-commit": "^1.2.2",
     "simple-get": "^2.7.0",
